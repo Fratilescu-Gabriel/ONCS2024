@@ -5,16 +5,16 @@
 
 __pytorch x__ - \
 __TensorFlow x__ - \
-__numpy__ -\
-__SciPy__ - \
-__pandas__ - \
-__matplotlib__ - Plotting\
+__numpy__ - https://numpy.org/doc/1.26/ \
+__SciPy__ - https://docs.scipy.org/doc/scipy/\
+__pandas__ - https://pandas.pydata.org/docs/\
+__matplotlib__ - https://matplotlib.org/stable/index.html\
 __~plotly__ - Plotting X\
 __??pyVista__ - \
 __????? Tkinter or PyQT5/PyQT6__ - GUI \
 __?geoPandas__ - geospacial data processing \
-__?xarray__ - \
+__?xarray__ - (https://docs.xarray.dev/en/stable/) \
 __??PyKE__ - \
-__#Astropy__ - \
-__#sunpy__ - \
-__pandas3D__- \
+__#Astropy__ - https://docs.astropy.org/en/stable/ \
+__#sunpy__ - https://docs.sunpy.org/en/stable/ \
+__pandas3D__- https://docs.panda3d.org/1.10/python/index \
