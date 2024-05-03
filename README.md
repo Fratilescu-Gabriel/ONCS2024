@@ -5,10 +5,10 @@
 
 __pytorch x__ - \
 __TensorFlow x__ - \
-__numpy__ - https://numpy.org/doc/1.26/ \
-__SciPy__ - https://docs.scipy.org/doc/scipy/\
-__pandas__ - https://pandas.pydata.org/docs/\
-__matplotlib__ - https://matplotlib.org/stable/index.html\
+__numpy__ - https://numpy.org/doc/1.26/  \
+__SciPy__ - https://docs.scipy.org/doc/scipy/  \
+__pandas__ - https://pandas.pydata.org/docs/  \
+__matplotlib__ - https://matplotlib.org/stable/index.html  \
 __~plotly__ - Plotting X\
 __??pyVista__ - \
 __????? Tkinter or PyQT5/PyQT6__ - GUI \
