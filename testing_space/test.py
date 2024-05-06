@@ -11,3 +11,5 @@ a = np.array([[-2.58289208,  0.43014843, -1.24082018, 1.59572603],
 
 df = pd.DataFrame(a)
 df.to_csv("test.csv" , mode='x')
+
+print("succeded")
