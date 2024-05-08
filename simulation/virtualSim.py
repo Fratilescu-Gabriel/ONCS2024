@@ -3,7 +3,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import scipy.integrate as sci
-#import astropy.units as u
+import astropy.units as u
 import astropy.cosmology as cosmo
 import astropy.coordinates as coord
 
@@ -61,20 +61,16 @@ class Environment():
     def gravitational_acceleration(self, position):
         #Distance between objects
         r = mymath.magnitude(position)
-        #print("r units: ", r)
         
         #Acceleration 0 if it's "underground"
         accel = np.array([0.0, 0.0, 0.0])
-        #print("accel units: ", accel)
         
         #Unit vector in the direction of the position vector
         unit_vector = mymath.to_unit_vector(position)
-        #print("unit_vector units: ", unit_vector)
 
         if r > mradius:
             #Gravitational acceleration formula
             accel = ((G * mmass)/(r**2))*unit_vector
-            #print("accel units: ", accel)
             
         return accel
 

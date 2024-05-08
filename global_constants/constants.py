@@ -1,8 +1,9 @@
 from astropy import units as u
+from . import customUnits
 
 class constantsClass():
         def __init__(self) -> None:
-                from . import customUnits
+                
                 cu = customUnits.customUnitsClass()
                 # SATELLITE CONSTANTS
                 self.SATELLITE_MASS = 0.300 # u.kg
