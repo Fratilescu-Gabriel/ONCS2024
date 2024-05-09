@@ -11,7 +11,7 @@ class Satellite():
         self.coord = coord
         self.velocity = velocity
         self.acceleration = acceleration
-        self.state = np.array([self.coord, self.velocity, self.acceleration])
+        self.state = np.array([self.coord, self.velocity, self.acceleration], dtype=np.longdouble)
         self.state = self.state.reshape(-1)
 
     def get_state(self):

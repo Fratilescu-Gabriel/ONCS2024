@@ -6,7 +6,7 @@ class constantsClass():
                 
                 cu = customUnits.customUnitsClass()
                 # SATELLITE CONSTANTS
-                self.SATELLITE_MASS = 0.300 # u.kg
+                self.SATELLITE_MASS = 4e6 # u.kg
 
                 # MOON CONSTANTSa
                 self.MOON_RADIUS = 1737.4 * 1000 # u.m
