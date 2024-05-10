@@ -3,7 +3,10 @@ import pandas as pd
 import csv
 import os
 
+
 PATH_TO_DATA = r"C:\Users\Fratilescu Gabriel\Documents\OCS\MySoftware\v1.0\package\DATA"
+if not os.path.exists(PATH_TO_DATA):
+    PATH_TO_DATA = r"C:\Eu\ONCS\v1.0\ONCS2024\DATA"
 SIMULATION_DATASET_DEFAULT_NAME = r"sim-dataset-"
 
 def my_to_csv( content:pd.DataFrame, column_names = [], file_name = None, new_file = True, file_append = True):
@@ -28,4 +31,3 @@ def get_last_filename():
     files.sort(key=lambda x: int(x.split('-')[-1].split('.')[0]))
     return files[-1]
 
-print(get_last_filename())

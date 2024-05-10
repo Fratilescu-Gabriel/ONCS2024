@@ -4,8 +4,12 @@ import scipy.integrate as sci
 import astropy.units as u
 import astropy.cosmology as cosmo
 import astropy.coordinates as coord
+import sys
+sys.path.append('..')
+import global_constants.customUnits as customUnits
+import global_constants.constants as constants
 
-class Satellite():
+class SatelliteClass():
     def __init__(self, mass, coord:np.ndarray, velocity:np.ndarray, acceleration:np.ndarray):
         self.mass = mass
         self.coord = coord

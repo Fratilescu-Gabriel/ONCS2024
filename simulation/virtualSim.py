@@ -2,13 +2,15 @@ import numpy as np
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
 import scipy.integrate as sci
 import astropy.units as u
 import astropy.cosmology as cosmo
 import astropy.coordinates as coord
 import pandas as pd
 
-from satellite import Satellite
+import simulation.satellite as satellite
+import simulation.moon as moon
 import sys
 sys.path.append('..')
 import global_constants.customUnits as customUnits
@@ -22,7 +24,6 @@ const = constants.constantsClass()
 cu = customUnits.customUnitsClass()
 mymath = math()
 
-
 ## CONSTANTS
 mass = const.SATELLITE_MASS
 mradius = 6357000.0
@@ -31,7 +32,7 @@ G = const.GRAVITATIONAL_CONSTANT
 # initial_acceleration = np.array([550, 5000, 0], dtype=np.longdouble)
 class Environment():
     def __init__(self) -> None:
-        self.satellite = Satellite(mass, np.zeros(3, dtype = np.longdouble),np.zeros(3, dtype=np.longdouble),np.zeros(3, dtype=np.longdouble))
+        self.satellite = satellite.SatelliteClass(mass, np.zeros(3, dtype = np.longdouble),np.zeros(3, dtype=np.longdouble),np.zeros(3, dtype=np.longdouble))
         
     
     def set_initial_conditions(self, coord, velocity, acceleration):
@@ -89,11 +90,12 @@ system.satellite.set_acceleration(np.array([0.0, 0.0, 0.0], dtype=np.longdouble)
 initial_state = system.satellite.get_state()
 initial_state = np.delete(initial_state, [6, 7, 8])
 print(initial_state)
-t = np.linspace(0,10000, 100000, dtype=np.longdouble)
+t = np.linspace(0,10000, 10000, dtype=np.longdouble)
 
 stateout = sci.odeint(system.motion_law_ode, initial_state, t)
 xout = stateout[:,0]
 yout = stateout[:,1]
+zout = stateout[:,2]
 vxout = stateout[:,3]
 vyout = stateout[:,4]
 vout = np.sqrt(vxout**2+vyout**2)
@@ -101,13 +103,6 @@ axout = np.gradient(t, vxout)
 ayout = np.gradient(t, vyout)
 aout = np.sqrt(axout**2+ayout**2)
 r = np.sqrt(xout**2 + yout**2)
-
-df = pd.DataFrame(np.transpose([t, xout, yout, vxout, vyout, vout, axout, ayout, aout, r]))
-print(df)
-my_to_csv(df, ['time', 'x','y','vx','vy','v','ax','ay','a','altitude'], file_name='try', file_append=False)
-
-del(df)
-
 
 fig, ax = plt.subplots(2,2)
 fig.canvas.manager.set_window_title("My graphs")
