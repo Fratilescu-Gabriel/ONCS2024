@@ -8,7 +8,6 @@ import astropy.cosmology as cosmo
 
 import sys
 sys.path.append('..')
-import global_constants.customUnits as customUnits
 import global_constants.constants as constants
 
 const = constants.constantsClass()
