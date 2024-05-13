@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Button, Slider
 DEFAULT_COLORS = ['b', 'g', 'r', 'y', 'c', 'm', 'k']
 
 import matplotlib
@@ -133,6 +134,7 @@ class Plotter3D:
         """
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
+        
         if title:
             ax.set_title(title)
         if xlabel:
@@ -144,6 +146,41 @@ class Plotter3D:
 
         self.figures.append((fig, ax))
         self.current_figure = (fig, ax)
+        
+    def set_axes_equal(self):
+        """
+        Make axes of 3D plot have equal scale so that spheres appear as spheres,
+        cubes as cubes, etc.
+
+        Input
+        ax: a matplotlib axis, e.g., as output from plt.gca().
+        """
+        _, ax = self.current_figure
+        
+        x_limits = ax.get_xlim3d()
+        y_limits = ax.get_ylim3d()
+        z_limits = ax.get_zlim3d()
+
+        x_range = abs(x_limits[1] - x_limits[0])
+        x_middle = np.mean(x_limits)
+        y_range = abs(y_limits[1] - y_limits[0])
+        y_middle = np.mean(y_limits)
+        z_range = abs(z_limits[1] - z_limits[0])
+        z_middle = np.mean(z_limits)
+
+        # The plot bounding box is a sphere in the sense of the infinity
+        # norm, hence I call half the max range the plot radius.
+        plot_radius = 0.5*max([x_range, y_range, z_range])
+
+        ax.set_xlim3d([x_middle - plot_radius, x_middle + plot_radius])
+        ax.set_ylim3d([y_middle - plot_radius, y_middle + plot_radius])
+        ax.set_zlim3d([z_middle - plot_radius, z_middle + plot_radius])
+    
+        
+    def add_curve(self, x, y, z, label=None, color=None):
+        """Add a curved line (curve) to the current figure."""
+        _, ax = self.current_figure
+        ax.plot(x, y, z, label=label, color=color)
 
     def add_scatter_plot(self, x, y, z, label=None, color=None, marker='o'):
         """Add a 3D scatter plot to the current figure."""
@@ -155,10 +192,11 @@ class Plotter3D:
         _, ax = self.current_figure
         ax.plot_wireframe(x, y, z, color=color, label=label)
 
-    def add_surface(self, x, y, z, cmap='viridis'):
+    def add_surface(self, x, y, z, cmap='viridis', color = None, alpha = 1.0):
         """Add a 3D surface plot to the current figure."""
         _, ax = self.current_figure
-        ax.plot_surface(x, y, z, cmap=cmap)
+        cmap = None if not color == None else cmap
+        ax.plot_surface(x, y, z, cmap=cmap, color = color, alpha = alpha)
 
     def add_contour(self, x, y, z, zdir='z', offset=0, cmap='coolwarm'):
         """Add a 3D contour plot to the current figure."""

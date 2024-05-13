@@ -1,9 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate as sci
-import astropy.units as u
-import astropy.cosmology as cosmo
-import astropy.coordinates as coord
 import sys
 sys.path.append('..')
 
