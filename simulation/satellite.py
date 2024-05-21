@@ -1,13 +1,5 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import scipy.integrate as sci
-import sys
-sys.path.append('..')
+from global_constants.constants import *
 
-# Adjust the import path for global_constants.constants
-from global_constants import constants
-
-const = constants.constantsClass()
 
 
 class SatelliteClass():
@@ -52,7 +44,7 @@ class SatelliteClass():
         semi_major_axis = (apoapsis + periapsis) / 2
 
         # Calculate orbital period using Kepler's third law
-        orbital_period = 2 * np.pi * np.sqrt(semi_major_axis**3 / (const.GRAVITATIONAL_CONSTANT * const.MOON_MASS))
+        orbital_period = 2 * np.pi * np.sqrt(semi_major_axis**3 / (GRAVITATIONAL_CONSTANT * MOON_MASS))
 
         return orbital_period
 

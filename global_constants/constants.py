@@ -1,23 +1,24 @@
-from astropy import units as u
 import numpy as np
+# SATELLITE CONSTANTS
+SATELLITE_MASS = 4e6# u.kg
 
-class constantsClass():
-        def __init__(self) -> None:
-                
-                # SATELLITE CONSTANTS
-                self.SATELLITE_MASS = 4e6 # u.kg
+# MOON CONSTANTS
+MOON_RADIUS = 1737.4 * 1000# u.m
+MOON_MASS = 7.34767309e22 # u.kg
+MOON_SIDEREAL_VELOCITY = 2.66169897516368202422328245057129981309e-6#rad/s
+MOON_ROTATION_AXIS_ANGLE = 6.687
+MOON_ANGLE_WITH_ECLIPTIC = (5.145 * np.pi) / 180#rad
+MOON_AV = 2*np.pi/(29.530589*24*60*60)#rad/s
 
-                # MOON CONSTANTS
-                self.MOON_RADIUS = 1737.4 * 1000 # u.m
-                self.MOON_MASS = 7.34767309e22  # u.kg
-                self.MOON_SIDEREAL_VELOCITY = 2.66169897516368202422328245057129981309e-6 #rad/s
-                self.MOON_ROTATION_AXIS_ANGLE = 6.13
-                self.MOON_ANGLE_WITH_ECLIPTIC = (5.15 * np.pi) / 180 #rad
-                self.MOON_ANGULAR_VELOCITY = 2*np.pi/(27.3*24*60*60) #rad/s
-                
-                self.SUN_RADIUS = 696340e3 #m
+#SUN CONSTANTS
+SUN_RADIUS = 696340e3#m
 
-                # PHYSICAL CONSTANTS
-                self.GRAVITATIONAL_CONSTANT = 6.6743e-11 # m3 / kg s2
-                self.DISTANCE_EARTH_SUN = 151.15e9 #m
-                self.DISTANCE_MOON_EARTH = 384400e3 #m
+# PHYSICAL CONSTANTS
+GRAVITATIONAL_CONSTANT = 6.6743e-11# m3 / kg s2
+DISTANCE_EARTH_SUN = 151.37e9#m
+DISTANCE_MOON_EARTH = 384400e3#m
+
+#TRANSMISSION CONSTANTS
+DC_TO_RF = 0.78
+RF_TO_DC = 0.72
+RF_COLLECTION = 0.93

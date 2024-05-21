@@ -5,6 +5,7 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, Slider
 DEFAULT_COLORS = ['b', 'g', 'r', 'y', 'c', 'm', 'k']
+from decimal import *
 
 import matplotlib
 import matplotlib.pyplot as plt
