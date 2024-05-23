@@ -27,13 +27,13 @@ Altitude_Test = (False, 0)
 
 # initial_acceleration = np.array([550, 5000, 0], dtype=np.longdouble)
 class Environment():
-    def __init__(self, collector_coordinates, earth_initial_angle, solar_pannel_power, DC_to_RF_power, in_SSE, in_CRE) -> None:
+    def __init__(self, collector_coordinates, earth_initial_angle, solar_panel_power, DC_to_RF_power, in_SSE, in_CRE) -> None:
         self.sat = satellite.SatelliteClass(SATELLITE_MASS, np.zeros(3, dtype = np.longdouble),np.zeros(3, dtype=np.longdouble),np.zeros(3, dtype=np.longdouble))
         self.planets_system = moon.PlanetsSystem(collector_coordinates, earth_initial_angle)
         self.sat_tr = None
         self.SSE = 0
         self.CRE = 0
-        self.solar_pannel_power = solar_pannel_power
+        self.solar_panel_power = solar_panel_power
         self.DC_to_RF_power = DC_to_RF_power
         self.total_sat_energy = self.SSE
         self.sat_init_acc = init_acc
@@ -46,11 +46,12 @@ class Environment():
         self.plot_CP = 0
         self.sat_in_light = None
         self.sat_collector_angle = None
+        
 
     def calculate_trajectories(self, t):
         self.earth_tr = np.transpose(self.planets_system.earth_trajectory(t))
-        self.sun_tr = np.transpose(self.planets_system.sun_trajectory(t))
-        self.collector_tr = np.transpose(self.planets_system.coll_trajectory(t))
+        self.sun_tr = np.transpose(self.planets_system.sun_trajectory( t))
+        self.collector_tr = np.transpose(self.planets_system.coll_trajectory( t))
         self.moon_surface = self.planets_system.moon_surface()
         
     
@@ -68,12 +69,12 @@ class Environment():
         #Compute total forces
         total_force = np.zeros(3)
 
-        gravitational_force = -self.gravitational_acceleration(position) * self.sat.mass
+        gravitational_force = -self.gravitational_acceleration(position) * SATELLITE_MASS
 
         total_force += gravitational_force
 
         #Acceleration based on Newton's second law
-        acceleration = total_force/self.sat.mass
+        acceleration = total_force/SATELLITE_MASS
 
 
         #Output state after derivation
@@ -110,7 +111,7 @@ class Environment():
     
     def is_sat_in_light(self, time_index):
         cone_tip_parameter = -MOON_RADIUS/(SUN_RADIUS - MOON_RADIUS)
-        angle = np.sum(self.planets_system.earth_angle_list[time_index])
+        angle = self.planets_system.earth_rotation_list[time_index]
         
         sun_distance_x = -(MOON_RADIUS * np.cos(MOON_ANGLE_WITH_ECLIPTIC) * np.sin(angle))
         sun_distance_y = -MOON_RADIUS * np.cos(MOON_ANGLE_WITH_ECLIPTIC) * np.cos(angle) + DISTANCE_EARTH_SUN
@@ -137,7 +138,11 @@ class Environment():
     def get_collector_sat_angle(self, time_index):
         normal_to_moon_surface = mymath.to_unit_vector(self.collector_tr[time_index])
         sat_unit_vector = mymath.to_unit_vector(self.sat_tr[time_index])
-        collector_sat_vector = mymath.to_unit_vector(normal_to_moon_surface - sat_unit_vector) 
+        
+        if not np.array_equal(normal_to_moon_surface, sat_unit_vector):
+            collector_sat_vector = mymath.to_unit_vector(normal_to_moon_surface - sat_unit_vector) 
+        else:
+            collector_sat_vector = normal_to_moon_surface
         
         angle = np.arccos(np.dot(normal_to_moon_surface, collector_sat_vector))
         
@@ -157,13 +162,13 @@ class Environment():
             # print(in_light)
             dt = t[index] - t[index-1]
             if in_light and index > 0 :
-                current_energy = dt * self.solar_pannel_power #kJ = kW*s
+                current_energy = dt * self.solar_panel_power #kJ = kW*s
                 self.SSE = self.SSE +  current_energy #kJ
                 self.total_sat_energy = self.total_sat_energy + current_energy #kJ
                 
             self.sat_collector_angle[index] = self.get_collector_sat_angle(index)
             
-            if self.sat_collector_angle[index] < 4.5 and index > 0:
+            if self.sat_collector_angle[index] < 6 and index > 0:
                 # print(self.sat_collector_angle[index])
                 energy = dt * self.DC_to_RF_power
                 if energy <= self.SSE:
@@ -196,17 +201,17 @@ DAYx29_53 = 29.530589*24*60*60
 #INITIAL CONDITIONS
 
 TIME = DAYx29_53
-DATA_POINTS = 1000000
-CHUNK_VOLUME= 100000
+DATA_POINTS = 500000
+CHUNK_VOLUME= 50000
 
 
-a = 10
+a = 1
 plot_earth = False
 transmission_case = 1
 
 solar_panel_surface = 0 #m2
 solar_panel_power_per_surface = 0 #W/m2
-solar_pannel_power = (solar_panel_surface * solar_panel_power_per_surface)/1000 #kW
+solar_panel_power = (solar_panel_surface * solar_panel_power_per_surface)/1000 #kW
 DC_to_RF_power = 0 #kW
 mean_total_power_cp = 0
 mean_total_power_sp = 0
@@ -215,8 +220,8 @@ mean_power_in_transmission = 0
 if transmission_case == 1: #Simple liniar loss
     solar_panel_surface = 10000 #m2
     solar_panel_power_per_surface = 257 #W/m2
-    solar_pannel_power = (solar_panel_surface * solar_panel_power_per_surface)/1000 #kW
-    DC_to_RF = 200 #kW
+    solar_panel_power = (solar_panel_surface * solar_panel_power_per_surface)/1000 #kW
+    DC_to_RF_power = 200 #kW
     
 
 collector_initial_position = np.array([MOON_RADIUS, 0, 0])
@@ -224,10 +229,10 @@ earth_initial_angle = 0
 
 
 
-sat_initial_position = np.array([MOON_RADIUS+400000, 0, 0 ], dtype=np.longdouble)
+sat_initial_position = np.array([MOON_RADIUS+300e3, 0,0], dtype=np.longdouble)
 
 r0 = mymath.magnitude(sat_initial_position)
-sat_initial_velocity = np.array([0, np.sqrt(G*MOON_MASS/r0), 200], dtype=np.longdouble)
+sat_initial_velocity = np.array([0, np.sqrt(G*MOON_MASS/r0), 550], dtype=np.longdouble)
 sat_initial_acceleration = np.array([0.0, 0.0, 0.0], dtype=np.longdouble)
 first_time = True
 in_SSE = 0
@@ -238,13 +243,13 @@ energy_out = 0
 
 
 apoapsis = 0
-periapsis = 9999999999999999999999
+periapsis = np.inf
 
-def chunk_processing(n, time_init, plot_chunk, write_data, new_file):
+def chunk_processing(n, time_init, plot_chunk, write_data, new_file, training):
     #MECHANISM
-    global mean_total_power_cp, mean_total_power_sp, energy_in, energy_out, apoapsis, periapsis, collector_initial_position, earth_initial_angle, solar_pannel_power, DC_to_RF_power,sat_initial_position, sat_initial_velocity, sat_initial_acceleration, first_time, in_SSE, in_CRE
-    system = Environment(collector_initial_position, earth_initial_angle, solar_pannel_power, DC_to_RF_power, in_SSE, in_CRE)
-    print("EARTH INIT ANGLE", earth_initial_angle)
+    global Altitude_Test, mean_total_power_cp, mean_total_power_sp, energy_in, energy_out, apoapsis, periapsis, collector_initial_position, earth_initial_angle, solar_panel_power, DC_to_RF_power,sat_initial_position, sat_initial_velocity, sat_initial_acceleration, first_time, in_SSE, in_CRE
+    system = Environment(collector_initial_position, earth_initial_angle, solar_panel_power, DC_to_RF_power, in_SSE, in_CRE)
+    # print("EARTH INIT ANGLE", earth_initial_angle)
     system.sat.set_coordinates(sat_initial_position)
     system.sat.set_velocity(sat_initial_velocity)
     system.sat.set_acceleration(sat_initial_acceleration)
@@ -255,12 +260,14 @@ def chunk_processing(n, time_init, plot_chunk, write_data, new_file):
     initial_state = system.sat.get_state()
     initial_state = np.delete(initial_state, [6, 7, 8])
 
-    time_per_chunk = TIME / (DATA_POINTS/CHUNK_VOLUME)
+    time_per_chunk = (TIME / DATA_POINTS)*CHUNK_VOLUME
     t = np.linspace(time_init, time_init + time_per_chunk, CHUNK_VOLUME)
+    
+    system.planets_system.set_earth_rotation_list(t)
 
     stateout = sci.odeint(system.motion_law_ode, initial_state, t)
 
-    system.calculate_trajectories(t)
+    system.calculate_trajectories( t)
 
     xout = stateout[:,0]
     yout = stateout[:,1]
@@ -278,15 +285,23 @@ def chunk_processing(n, time_init, plot_chunk, write_data, new_file):
     aout = np.sqrt(axout**2+ayout**2+azout**2)
     r = np.sqrt(xout**2 + yout**2+zout**2) - MOON_RADIUS
     
-    Altitude_Test = [(True, alt) if alt > 500e3 else False for alt in r]
-
+    for alt in r:
+        if (alt > 500e3 or alt < 100e3) and not Altitude_Test[0]:
+            Altitude_Test = (True, alt)
+        else:
+            Altitude_Test = (False, alt)
+    
+    if Altitude_Test[0] and training:
+        Altitude_Test = (False, 0)
+        return True
+    
     if apoapsis < system.calculate_apoapsis(stateout):
         apoapsis = system.calculate_apoapsis(stateout)
         
     if periapsis > system.calculate_periapsis(stateout):
         periapsis = system.calculate_periapsis(stateout)
     orbital_period = system.sat.calculate_orbital_period(apoapsis, periapsis)
-    print("Orbital period with kepler", orbital_period)
+    # print("Orbital period with kepler", orbital_period)
 
     system.performance(t)
     
@@ -302,14 +317,15 @@ def chunk_processing(n, time_init, plot_chunk, write_data, new_file):
         else:
             in_shadow = in_shadow + 1
 
-    print("Percentage in shadow")
-    print(100* in_shadow/(in_shadow+in_light))
+    # print("Percentage in shadow")
+    # print(100* in_shadow/(in_shadow+in_light))
     
     # if plot_chunk:
     #     x, y, z = system.moon_surface
     #     plt3d.add_surface(x, y, z, alpha=1)
     #     update_plot(system, stateout, t, fig, ax, plt3d, f, a)
-    
+    # print(new_file)
+    new_file = True if first_time else False
     if write_data:
         my_to_csv(
             pd.DataFrame([t, r, xout, yout, zout, vxout, vyout, vzout, vout, axout, ayout, azout, aout, system.collector_tr[:,0],
@@ -318,14 +334,14 @@ def chunk_processing(n, time_init, plot_chunk, write_data, new_file):
                     system.sat_in_light, system.sat_collector_angle, system.plot_CRE, system.plot_SSE, system.plot_CP, system.plot_SP]),
             column_names= ['time', 'altitude', 'x', 'y', 'z', 'vx', 'vy', 'vz', 'v', 'ax', 'ay', 'az', 'a', 'cx', 'cy', 'cz', 
                         'sx', 'sy', 'sz', 'ex', 'ey', 'ez','SIL', 'SCA', 'CRE', 'SSE', 'CP', 'SP'],
-            new_file= new_file if first_time else False,
-            file_append= True if not first_time else False
+            new_file= training if training else new_file,
+            file_append= True if (not first_time) or (not training) else False,
+            file_name= 'training.csv' if training else None
         )
-        
+    
     collector_initial_position = system.collector_tr[-1]
-    earth_initial_angle = earth_initial_angle + system.planets_system.earth_angle_list[-1]
-    solar_pannel_power = 25
-    DC_to_RF_power = 1000
+    earth_initial_angle = system.planets_system.earth_rotation_list[-1]
+
 
     sat_initial_position = system.sat_tr[-1]
 
@@ -336,11 +352,10 @@ def chunk_processing(n, time_init, plot_chunk, write_data, new_file):
     in_CRE = system.plot_CRE[-1]
     first_time = False
     
-    mean_total_power_cp = ((n-1) * CHUNK_VOLUME * mean_total_power_cp + np.sum(system.plot_CP))/(n*CHUNK_VOLUME)
-    mean_total_power_sp = ((n-1) * CHUNK_VOLUME * mean_total_power_sp + np.sum(system.plot_SP))/(n*CHUNK_VOLUME)
-    print('MEAN SATELLITE POWER', mean_total_power_sp)
-    print('MEAN OUTPUT POWER', mean_total_power_cp)
-    print("CP SUM", np.sum(system.plot_CP))
+    mean_total_power_cp += np.sum(system.plot_CP)
+    mean_total_power_sp += np.sum(system.plot_SP)
+    # print("CP SUM", np.sum(system.plot_CP))
+    return False
 
 def plot_data(file_name = get_last_filename()):
     global plot_earth, mean_total_power_sp, mean_total_power_cp
@@ -401,9 +416,8 @@ def plot_data(file_name = get_last_filename()):
             
             plt3d.new_figure("", 'X', 'Y', 'Z')
             
-            env = Environment(collector_initial_position, earth_initial_angle, solar_pannel_power, DC_to_RF_power, in_SSE, in_CRE)
-            env.calculate_trajectories(np.asarray([0]))
-            moon_surface = env.moon_surface
+            env = Environment(collector_initial_position, earth_initial_angle, solar_panel_power, DC_to_RF_power, in_SSE, in_CRE)
+            moon_surface = env.planets_system.moon_surface()
             del(env)
             
             plt3d.add_surface(moon_surface[0], moon_surface[1], moon_surface[2], alpha=0.4)
@@ -534,11 +548,22 @@ def plot_show():
     print("TIME TAKEN", end-start_time)
     plt.show()
 
-def start_simulation():
-    print(DATA_POINTS/CHUNK_VOLUME)
+def start_simulation(training):
+    global mean_total_power_sp, mean_total_power_cp
+    # print(DATA_POINTS/CHUNK_VOLUME)
     for chunk in range(int(DATA_POINTS/CHUNK_VOLUME)):
-        print("TIMEINIT:",chunk*(TIME/(DATA_POINTS/CHUNK_VOLUME)))
-        chunk_processing(chunk+1, chunk*(TIME/(DATA_POINTS/CHUNK_VOLUME)), True, True, True)
+        # print('CHUNK ' + str(chunk+1) + ' out of ' + str(int(DATA_POINTS/CHUNK_VOLUME)))
+        alt_test = chunk_processing(chunk+1, chunk*(TIME/(DATA_POINTS/CHUNK_VOLUME)), True, True, True, training)
+        if alt_test and training:
+            # print("ALTITUDE OUT OF BOUNDS IN PROCESSING")
+            return (True, chunk+1)
+    
+    mean_total_power_cp /= TIME
+    mean_total_power_sp /= TIME
+    # print('MEAN SATELLITE POWER', mean_total_power_sp)
+    # print('MEAN OUTPUT POWER', mean_total_power_cp)
+    if training:
+        return (False, chunk+1)
 
 simulate = False
 plot = True
@@ -554,21 +579,22 @@ else:
 
 file_to_plot = ''
 
-if simulate:
-    start_simulation()
-    end = timer()
-    print("TIME TAKEN", end-start_time)
-    
-    
-if plot:
-    if file_to_plot == '':
-        plot_data()
-    elif check_file_exists(file_to_plot):
-        plot_data(file_name=file_to_plot)
-    else:
-        raise KeyError('File not found')
+if __name__ == '__main__':
+    if simulate:
+        start_simulation(False)
+        end = timer()
+        print("TIME TAKEN", end-start_time)
+        
+        
+    if plot:
+        if file_to_plot == '':
+            plot_data()
+        elif check_file_exists(file_to_plot):
+            plot_data(file_name=file_to_plot)
+        else:
+            raise KeyError('File not found')
 
 
-print('EFFICIENCY', 100 * energy_out/energy_in)
-if Altitude_Test[0]:
-    print("ALTITUDE MAX OVER: ", Altitude_Test[1])
+    print('EFFICIENCY', 100 * energy_out/energy_in)
+    if Altitude_Test[0]:
+        print("ALTITUDE MAX OVER: ", Altitude_Test[1])

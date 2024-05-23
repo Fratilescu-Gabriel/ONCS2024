@@ -44,7 +44,7 @@ class SatelliteClass():
         semi_major_axis = (apoapsis + periapsis) / 2
 
         # Calculate orbital period using Kepler's third law
-        orbital_period = 2 * np.pi * np.sqrt(semi_major_axis**3 / (GRAVITATIONAL_CONSTANT * MOON_MASS))
+        orbital_period = 2 * np.pi * np.sqrt((semi_major_axis**3) / (GRAVITATIONAL_CONSTANT * MOON_MASS))
 
         return orbital_period
 

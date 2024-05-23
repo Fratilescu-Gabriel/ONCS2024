@@ -24,8 +24,8 @@ def my_to_csv(data, column_names=[], file_name=None, new_file=True, file_append=
         new_file (bool, optional): Whether to create a new file (True) or append to an existing one (False). Defaults to True.
         file_append (bool, optional): If new_file is False, whether to append to the existing file (True) or overwrite it (False). Defaults to True.
     """
-    if not column_names:
-        raise ValueError("Column names must be provided.")
+    # if not column_names:
+    #     raise ValueError("Column names must be provided.")
 
     if new_file:
         if file_name is None:
@@ -53,7 +53,7 @@ def my_to_csv(data, column_names=[], file_name=None, new_file=True, file_append=
                     array = array.T.tolist()  # Transpose and convert to list of lists if it's a NumPy array
                 writer.writerows(map(list, map(np.float64, row)) for row in array)
 
-    print(f"Data saved to '{file_path}'.")
+    # print(f"Data saved to '{file_path}'.")
 
 
 def get_last_filename():
